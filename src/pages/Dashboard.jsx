@@ -98,11 +98,11 @@ const Dashboard = () => {
   return (
     <div className="space-y-8">
       {/* Header with Trainer Photo */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl shadow-lg p-8 text-white">
-        <div className="flex flex-col md:flex-row items-center gap-6">
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 text-white">
+        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
           {/* Trainer Photo */}
           <div className="flex-shrink-0">
-            <div className="w-32 h-32 rounded-full bg-white/20 flex items-center justify-center overflow-hidden border-4 border-white/30">
+            <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full bg-white/20 flex items-center justify-center overflow-hidden border-4 border-white/30">
               <img 
                 src="/images/trainer.jpg" 
                 alt="Абдрахманов Булат"
@@ -115,9 +115,9 @@ const Dashboard = () => {
           </div>
           
           {/* Trainer Info */}
-          <div className="flex-1 text-center md:text-left">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">Абдрахманов Булат</h1>
-            <p className="text-lg text-white/90 mb-4">Персональный тренер</p>
+          <div className="flex-1 text-center sm:text-left">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1 sm:mb-2">Абдрахманов Булат</h1>
+            <p className="text-base sm:text-lg text-white/90">Персональный тренер</p>
           </div>
         </div>
       </div>

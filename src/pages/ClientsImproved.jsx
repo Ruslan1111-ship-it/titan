@@ -329,41 +329,47 @@ const ClientsImproved = () => {
       {/* Clients List */}
       <div className="space-y-4">
         {clientsWithMemberships.map(client => (
-          <div key={client.id} className="bg-white rounded-xl shadow-md p-6">
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-gray-900">{client.full_name}</h3>
-                <p className="text-gray-600">{client.phone}</p>
-                {client.notes && (
-                  <p className="text-sm text-gray-500 mt-1">{client.notes}</p>
-                )}
+          <div key={client.id} className="bg-white rounded-xl shadow-md p-4 sm:p-6">
+            {/* Client Header */}
+            <div className="mb-4">
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex-1 min-w-0 pr-2">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 truncate">{client.full_name}</h3>
+                  <p className="text-sm sm:text-base text-gray-600">{client.phone}</p>
+                  {client.notes && (
+                    <p className="text-xs sm:text-sm text-gray-500 mt-1">{client.notes}</p>
+                  )}
+                </div>
               </div>
-              <div className="flex gap-2">
+              
+              {/* Action Buttons */}
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => handleEditClient(client)}
-                  className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="flex items-center gap-1 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
                   title="Редактировать"
                 >
                   <Edit2 className="w-4 h-4" />
-                  Редактировать
+                  <span className="hidden sm:inline">Редактировать</span>
                 </button>
                 <button
                   onClick={() => {
                     setSelectedClient(client);
                     setShowMembershipForm(true);
                   }}
-                  className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                  className="flex items-center gap-1 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm flex-1 sm:flex-none justify-center"
                   title="Купить абонемент"
                 >
                   <CreditCard className="w-4 h-4" />
-                  Купить абонемент
+                  <span>Купить абонемент</span>
                 </button>
                 <button
                   onClick={() => handleDeleteClient(client.id)}
-                  className="flex items-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-                  title="Удалить клиента"
+                  className="flex items-center gap-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm"
+                  title="Удалить"
                 >
                   <Trash2 className="w-4 h-4" />
+                  <span className="sm:hidden">Удалить</span>
                 </button>
               </div>
             </div>
@@ -403,28 +409,28 @@ const ClientsImproved = () => {
             )}
 
             {/* Status Bar */}
-            <div className="mt-4 grid grid-cols-3 gap-4">
-              <div className="bg-gray-50 rounded-lg p-3 text-center">
-                <p className="text-sm text-gray-600">Осталось тренировок</p>
-                <p className="text-2xl font-bold text-gray-900">{client.totalRemainingSessions}</p>
+            <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-4">
+              <div className="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
+                <p className="text-xs sm:text-sm text-gray-600">Осталось</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">{client.totalRemainingSessions}</p>
               </div>
-              <div className="bg-gray-50 rounded-lg p-3 text-center">
-                <p className="text-sm text-gray-600">Запланировано</p>
-                <p className="text-2xl font-bold text-blue-600">{client.scheduledSessions}</p>
+              <div className="bg-gray-50 rounded-lg p-2 sm:p-3 text-center">
+                <p className="text-xs sm:text-sm text-gray-600">Запланировано</p>
+                <p className="text-xl sm:text-2xl font-bold text-blue-600">{client.scheduledSessions}</p>
               </div>
-              <div className={`rounded-lg p-3 text-center ${client.hasDebt ? 'bg-red-50' : 'bg-green-50'}`}>
-                <p className="text-sm text-gray-600">Статус</p>
+              <div className={`rounded-lg p-2 sm:p-3 text-center ${client.hasDebt ? 'bg-red-50' : 'bg-green-50'}`}>
+                <p className="text-xs sm:text-sm text-gray-600">Статус</p>
                 {client.hasDebt ? (
                   <div>
-                    <AlertCircle className="w-6 h-6 mx-auto text-red-600" />
-                    <p className="text-sm font-semibold text-red-600 mt-1">
-                      Нужно {client.debtAmount} тренировок
+                    <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 mx-auto text-red-600" />
+                    <p className="text-xs sm:text-sm font-semibold text-red-600 mt-1">
+                      Нужно {client.debtAmount}
                     </p>
                   </div>
                 ) : (
                   <div>
-                    <CheckCircle className="w-6 h-6 mx-auto text-green-600" />
-                    <p className="text-sm font-semibold text-green-600 mt-1">Всё оплачено</p>
+                    <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 mx-auto text-green-600" />
+                    <p className="text-xs sm:text-sm font-semibold text-green-600 mt-1">Оплачено</p>
                   </div>
                 )}
               </div>

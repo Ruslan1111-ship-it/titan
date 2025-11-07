@@ -284,19 +284,19 @@ const ScheduleCalendar = () => {
               <div
                 key={index}
                 onClick={() => date && handleDateClick(date)}
-                className={`min-h-24 p-2 border rounded-lg cursor-pointer transition-colors ${
+                className={`min-h-16 sm:min-h-20 md:min-h-24 p-1 sm:p-2 border rounded-lg cursor-pointer transition-colors ${
                   date ? 'hover:bg-blue-50' : 'bg-gray-50'
                 } ${isToday(date) ? 'border-blue-500 border-2' : 'border-gray-200'}`}
               >
                 {date && (
                   <>
-                    <div className={`text-sm font-semibold ${isToday(date) ? 'text-blue-600' : 'text-gray-700'}`}>
+                    <div className={`text-xs sm:text-sm font-semibold ${isToday(date) ? 'text-blue-600' : 'text-gray-700'}`}>
                       {date.getDate()}
                     </div>
                     {sessionsCount > 0 && (
                       <div className="mt-1">
-                        <div className="text-xs bg-blue-600 text-white rounded-full px-2 py-1 text-center">
-                          {sessionsCount} {sessionsCount === 1 ? 'тренировка' : 'тренировок'}
+                        <div className="text-xs bg-blue-600 text-white rounded-full px-1 sm:px-2 py-0.5 sm:py-1 text-center truncate">
+                          {sessionsCount}
                         </div>
                       </div>
                     )}
@@ -310,11 +310,11 @@ const ScheduleCalendar = () => {
 
       {/* Day Schedule Modal */}
       {showDayModal && selectedDate && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
           <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b p-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">
+            <div className="sticky top-0 bg-white border-b p-4 sm:p-6">
+              <div className="flex justify-between items-center gap-2">
+                <h2 className="text-lg sm:text-2xl font-bold truncate">
                   {selectedDate.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
                 </h2>
                 <div className="flex gap-2">
