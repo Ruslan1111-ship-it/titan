@@ -12,7 +12,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "init-db": "node server/initDb.js",
-    "start": "npm run build && npm run init-db && node server/index.js"
+    "start": "node server/index.js"
   },
   "keywords": ["gym", "attendance", "qr-code"],
   "author": "",
