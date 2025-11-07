@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { CheckCircle, XCircle, Camera, AlertCircle } from 'lucide-react';
 import { checkIn } from '../utils/api';
+import jsQR from 'jsqr';
 
 const Scanner = () => {
   const [scanning, setScanning] = useState(false);
@@ -21,12 +22,6 @@ const Scanner = () => {
     try {
       setError(null);
       setResult(null);
-      
-      // Check if jsQR is loaded
-      if (!window.jsQR) {
-        setError('Библиотека сканирования не загружена. Перезагрузите страницу или используйте ручной ввод.');
-        return;
-      }
       
       const constraints = {
         video: {
@@ -84,11 +79,13 @@ const Scanner = () => {
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       
       // Use jsQR library for QR code detection
-      if (window.jsQR) {
-        const code = window.jsQR(imageData.data, imageData.width, imageData.height);
-        if (code) {
-          await handleScan(code.data);
-        }
+      const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: 'dontInvert',
+      });
+      
+      if (code) {
+        console.log('QR Code detected:', code.data);
+        await handleScan(code.data);
       }
     } catch (err) {
       console.error('Error scanning QR code:', err);

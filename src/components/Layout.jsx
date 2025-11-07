@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, UserCheck, Activity, BarChart3, QrCode, LogOut, Menu, X } from 'lucide-react';
+import { Home, Users, UserCheck, Activity, BarChart3, QrCode, LogOut, Menu, X, Settings } from 'lucide-react';
 
 const Layout = ({ children, onLogout }) => {
   const location = useLocation();
@@ -12,6 +12,7 @@ const Layout = ({ children, onLogout }) => {
     { name: 'Тренеры', href: '/trainers', icon: UserCheck },
     { name: 'Посещения', href: '/visits', icon: Activity },
     { name: 'Аналитика', href: '/analytics', icon: BarChart3 },
+    { name: 'Настройки', href: '/settings', icon: Settings },
   ];
 
   return (

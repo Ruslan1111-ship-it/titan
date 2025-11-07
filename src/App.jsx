@@ -7,6 +7,7 @@ import Trainers from './pages/Trainers';
 import Visits from './pages/Visits';
 import Analytics from './pages/Analytics';
 import Scanner from './pages/Scanner';
+import Settings from './pages/Settings';
 import Layout from './components/Layout';
 
 function App() {
@@ -67,6 +68,7 @@ function App() {
                   <Route path="/trainers" element={<Trainers />} />
                   <Route path="/visits" element={<Visits />} />
                   <Route path="/analytics" element={<Analytics />} />
+                  <Route path="/settings" element={<Settings />} />
                 </Routes>
               </Layout>
             ) : (
