@@ -1,6 +1,5 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import QRCode from 'qrcode';
 import db from '../database.js';
 import { authenticateToken } from '../middleware/auth.js';
 
@@ -131,27 +130,6 @@ router.delete('/:id', authenticateToken, (req, res) => {
   } catch (error) {
     console.error('Delete client error:', error);
     res.status(500).json({ error: 'Ошибка удаления клиента' });
-  }
-});
-
-// Генерация QR-кода для клиента
-router.get('/:id/qrcode', authenticateToken, async (req, res) => {
-  try {
-    const client = db.prepare('SELECT uuid FROM clients WHERE id = ?').get(req.params.id);
-
-    if (!client) {
-      return res.status(404).json({ error: 'Клиент не найден' });
-    }
-
-    const qrCodeDataUrl = await QRCode.toDataURL(client.uuid, {
-      width: 300,
-      margin: 2,
-    });
-
-    res.json({ qrCode: qrCodeDataUrl, uuid: client.uuid });
-  } catch (error) {
-    console.error('Generate QR code error:', error);
-    res.status(500).json({ error: 'Ошибка генерации QR-кода' });
   }
 });
 

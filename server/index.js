@@ -4,9 +4,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
-import trainersRoutes from './routes/trainers.js';
 import clientsRoutes from './routes/clients.js';
-import visitsRoutes from './routes/visits.js';
 import analyticsRoutes from './routes/analytics.js';
 import membershipsRoutes from './routes/memberships.js';
 import scheduleRoutes from './routes/schedule.js';
@@ -34,9 +32,7 @@ app.get('/api/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/trainers', trainersRoutes);
 app.use('/api/clients', clientsRoutes);
-app.use('/api/visits', visitsRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/memberships', membershipsRoutes);
 app.use('/api/schedule', scheduleRoutes);

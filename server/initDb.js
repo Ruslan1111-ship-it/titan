@@ -14,16 +14,6 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
-  -- Таблица тренеров
-  CREATE TABLE IF NOT EXISTS trainers (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    uuid TEXT UNIQUE NOT NULL,
-    full_name TEXT NOT NULL,
-    phone TEXT NOT NULL,
-    specialization TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  );
-
   -- Таблица клиентов
   CREATE TABLE IF NOT EXISTS clients (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -139,8 +129,10 @@ console.log('✓ База данных инициализирована');
 console.log('');
 console.log('Структура базы данных:');
 console.log('- admins: администраторы системы');
-console.log('- trainers: тренеры');
-console.log('- clients: клиенты с QR-кодами');
-console.log('- visits: журнал посещений');
+console.log('- clients: клиенты');
+console.log('- membership_types: типы абонементов');
+console.log('- client_memberships: купленные абонементы');
+console.log('- training_schedule: расписание тренировок');
+console.log('- training_history: история проведённых тренировок');
 
 process.exit(0);
