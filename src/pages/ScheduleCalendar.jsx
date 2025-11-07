@@ -98,12 +98,12 @@ const ScheduleCalendar = () => {
     setShowDayModal(true);
   };
 
-  const handleClientChange = (clientId) => {
+  const handleClientChange = async (clientId) => {
     setFormData({...formData, client_id: clientId, membership_id: ''});
+    setClientMemberships([]);
+    
     if (clientId) {
-      fetchClientMemberships(clientId);
-    } else {
-      setClientMemberships([]);
+      await fetchClientMemberships(clientId);
     }
   };
 
@@ -371,13 +371,24 @@ const ScheduleCalendar = () => {
                           required
                           disabled={!formData.client_id}
                         >
-                          <option value="">Выберите абонемент</option>
+                          <option value="">
+                            {!formData.client_id 
+                              ? 'Сначала выберите клиента' 
+                              : clientMemberships.length === 0 
+                                ? 'У клиента нет активных абонементов' 
+                                : 'Выберите абонемент'}
+                          </option>
                           {clientMemberships.map(m => (
                             <option key={m.id} value={m.id}>
                               {m.type_name} (осталось: {m.remaining_sessions})
                             </option>
                           ))}
                         </select>
+                        {formData.client_id && clientMemberships.length === 0 && (
+                          <p className="text-sm text-red-600 mt-1">
+                            У этого клиента нет активных абонементов. Купите абонемент в разделе "Клиенты".
+                          </p>
+                        )}
                       </div>
 
                       <div>
