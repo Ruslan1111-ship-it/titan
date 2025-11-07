@@ -79,35 +79,27 @@ router.get('/uuid/:uuid', (req, res) => {
 // Создать клиента
 router.post('/', authenticateToken, (req, res) => {
   try {
-    const { full_name, phone, registration_date, membership_active, membership_end_date, trainer_id } = req.body;
+    const { full_name, phone, registration_date, notes } = req.body;
 
-    if (!full_name || !phone || !registration_date) {
-      return res.status(400).json({ error: 'Укажите ФИО, телефон и дату регистрации' });
+    if (!full_name || !phone) {
+      return res.status(400).json({ error: 'Укажите ФИО и телефон' });
     }
 
     const uuid = uuidv4();
+    const regDate = registration_date || new Date().toISOString().split('T')[0];
+    
     const result = db.prepare(`
-      INSERT INTO clients (uuid, full_name, phone, registration_date, membership_active, membership_end_date, trainer_id)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO clients (uuid, full_name, phone, registration_date, notes)
+      VALUES (?, ?, ?, ?, ?)
     `).run(
       uuid,
       full_name,
       phone,
-      registration_date,
-      membership_active ? 1 : 0,
-      membership_end_date || null,
-      trainer_id || null
+      regDate,
+      notes || null
     );
 
-    const client = db.prepare(`
-      SELECT 
-        c.*,
-        t.full_name as trainer_name,
-        t.specialization as trainer_specialization
-      FROM clients c
-      LEFT JOIN trainers t ON c.trainer_id = t.id
-      WHERE c.id = ?
-    `).get(result.lastInsertRowid);
+    const client = db.prepare('SELECT * FROM clients WHERE id = ?').get(result.lastInsertRowid);
 
     res.status(201).json(client);
   } catch (error) {
@@ -119,35 +111,24 @@ router.post('/', authenticateToken, (req, res) => {
 // Обновить клиента
 router.put('/:id', authenticateToken, (req, res) => {
   try {
-    const { full_name, phone, registration_date, membership_active, membership_end_date, trainer_id } = req.body;
+    const { full_name, phone, notes } = req.body;
 
-    if (!full_name || !phone || !registration_date) {
-      return res.status(400).json({ error: 'Укажите ФИО, телефон и дату регистрации' });
+    if (!full_name || !phone) {
+      return res.status(400).json({ error: 'Укажите ФИО и телефон' });
     }
 
     db.prepare(`
       UPDATE clients
-      SET full_name = ?, phone = ?, registration_date = ?, membership_active = ?, membership_end_date = ?, trainer_id = ?
+      SET full_name = ?, phone = ?, notes = ?
       WHERE id = ?
     `).run(
       full_name,
       phone,
-      registration_date,
-      membership_active ? 1 : 0,
-      membership_end_date || null,
-      trainer_id || null,
+      notes || null,
       req.params.id
     );
 
-    const client = db.prepare(`
-      SELECT 
-        c.*,
-        t.full_name as trainer_name,
-        t.specialization as trainer_specialization
-      FROM clients c
-      LEFT JOIN trainers t ON c.trainer_id = t.id
-      WHERE c.id = ?
-    `).get(req.params.id);
+    const client = db.prepare('SELECT * FROM clients WHERE id = ?').get(req.params.id);
 
     if (!client) {
       return res.status(404).json({ error: 'Клиент не найден' });

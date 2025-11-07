@@ -8,6 +8,8 @@ import trainersRoutes from './routes/trainers.js';
 import clientsRoutes from './routes/clients.js';
 import visitsRoutes from './routes/visits.js';
 import analyticsRoutes from './routes/analytics.js';
+import membershipsRoutes from './routes/memberships.js';
+import scheduleRoutes from './routes/schedule.js';
 
 dotenv.config();
 
@@ -36,6 +38,8 @@ app.use('/api/trainers', trainersRoutes);
 app.use('/api/clients', clientsRoutes);
 app.use('/api/visits', visitsRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/memberships', membershipsRoutes);
+app.use('/api/schedule', scheduleRoutes);
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
