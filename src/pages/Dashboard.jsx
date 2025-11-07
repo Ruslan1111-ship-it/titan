@@ -128,12 +128,12 @@ const Dashboard = () => {
           const Icon = stat.icon;
           return (
             <div key={stat.name} className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
-              <div className="flex items-start justify-between">
+              <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-600 mb-2">{stat.name}</p>
                   <p className="text-3xl font-bold text-gray-900 truncate">{stat.value}</p>
                 </div>
-                <div className={`${stat.color} p-3 rounded-xl ml-4 flex-shrink-0`}>
+                <div className={`${stat.color} p-3 rounded-xl ml-4 flex-shrink-0 self-end`}>
                   <Icon className="w-6 h-6 text-white" />
                 </div>
               </div>
