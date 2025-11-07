@@ -22,21 +22,37 @@ const Scanner = () => {
       setError(null);
       setResult(null);
       
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' }
-      });
+      // Check if jsQR is loaded
+      if (!window.jsQR) {
+        setError('Библиотека сканирования не загружена. Перезагрузите страницу или используйте ручной ввод.');
+        return;
+      }
+      
+      const constraints = {
+        video: {
+          facingMode: { ideal: 'environment' },
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      };
+      
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
       
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         streamRef.current = stream;
-        setScanning(true);
         
-        // Start QR code detection
-        scanIntervalRef.current = setInterval(scanQRCode, 500);
+        // Wait for video to be ready
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current.play();
+          setScanning(true);
+          // Start QR code detection
+          scanIntervalRef.current = setInterval(scanQRCode, 300);
+        };
       }
     } catch (err) {
       console.error('Error accessing camera:', err);
-      setError('Не удалось получить доступ к камере. Используйте ручной ввод.');
+      setError('Не удалось получить доступ к камере. Проверьте разрешения или используйте ручной ввод.');
     }
   };
 
@@ -119,55 +135,34 @@ const Scanner = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-2xl">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+      <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-4 sm:mb-6 w-full max-w-2xl mx-auto">
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Сканер QR-кодов</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-8 text-center">Сканер QR-кодов</h1>
           <p className="text-gray-600 mt-2">Отсканируйте QR-код клиента для регистрации посещения</p>
         </div>
 
         {/* Camera View */}
         {!result && (
-          <div className="mb-6">
-            <div className="relative bg-black rounded-xl overflow-hidden" style={{ aspectRatio: '4/3' }}>
-              {scanning ? (
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Camera className="w-24 h-24 text-gray-400" />
-                </div>
-              )}
-              
-              {scanning && (
-                <div className="absolute inset-0 border-4 border-blue-500 rounded-xl pointer-events-none">
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 border-4 border-white rounded-lg"></div>
-                </div>
-              )}
-            </div>
-
-            <div className="mt-4 flex gap-3">
-              {!scanning ? (
-                <button
-                  onClick={startScanning}
-                  className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center"
-                >
-                  <Camera className="w-5 h-5 mr-2" />
-                  Начать сканирование
-                </button>
-              ) : (
-                <button
-                  onClick={stopScanning}
-                  className="flex-1 bg-red-600 text-white py-3 rounded-lg font-medium hover:bg-red-700 transition-colors"
-                >
-                  Остановить
-                </button>
-              )}
-            </div>
+          <div className="relative bg-black rounded-lg overflow-hidden w-full" style={{ paddingBottom: '75%', maxHeight: '70vh' }}>
+            {scanning ? (
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Camera className="w-24 h-24 text-gray-400" />
+              </div>
+            )}
+            
+            {scanning && (
+              <div className="absolute inset-0 border-4 border-blue-500 rounded-lg pointer-events-none">
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 border-4 border-white rounded-lg"></div>
+              </div>
+            )}
           </div>
         )}
 
@@ -233,7 +228,7 @@ const Scanner = () => {
                 value={manualInput}
                 onChange={(e) => setManualInput(e.target.value)}
                 placeholder="Введите UUID клиента"
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base w-full"
               />
               <button
                 type="submit"
