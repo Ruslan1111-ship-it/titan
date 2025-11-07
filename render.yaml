@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: titan-gym
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run server
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_PATH
+        value: ./gym.db
+      - key: PORT
+        value: 3001
