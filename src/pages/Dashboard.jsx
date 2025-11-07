@@ -1,32 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { Users, UserCheck, Activity, TrendingUp } from 'lucide-react';
-import { getStats, getVisitsChart } from '../utils/api';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { format } from 'date-fns';
-import { ru } from 'date-fns/locale';
+import { Users, CreditCard, Calendar, DollarSign } from 'lucide-react';
 
 const Dashboard = () => {
-  const [stats, setStats] = useState(null);
-  const [chartData, setChartData] = useState([]);
-  const [period, setPeriod] = useState('month');
+  const [stats, setStats] = useState({
+    totalClients: 0,
+    activeMemberships: 0,
+    scheduledSessions: 0,
+    monthEarnings: 0
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadData();
-  }, [period]);
+  }, []);
 
   const loadData = async () => {
     try {
       setLoading(true);
-      const [statsData, chartData] = await Promise.all([
-        getStats(period),
-        getVisitsChart(period === 'week' ? 7 : 30),
-      ]);
-      setStats(statsData);
-      setChartData(chartData.map(item => ({
-        date: format(new Date(item.date), 'dd MMM', { locale: ru }),
-        count: item.count,
-      })));
+      const token = localStorage.getItem('token');
+      
+      // Получаем клиентов
+      const clientsResponse = await fetch('/api/clients', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const clients = await clientsResponse.json();
+      
+      // Получаем активные абонементы
+      const membershipsResponse = await fetch('/api/memberships/active', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const memberships = await membershipsResponse.json();
+      
+      // Получаем расписание на текущий месяц
+      const today = new Date();
+      const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+      const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+      
+      const scheduleResponse = await fetch(`/api/schedule?start_date=${startOfMonth}&end_date=${endOfMonth}&status=scheduled`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const schedule = await scheduleResponse.json();
+      
+      // Получаем заработок за месяц
+      const earningsResponse = await fetch('/api/analytics/earnings?period=month', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const earnings = await earningsResponse.json();
+      
+      setStats({
+        totalClients: clients.length,
+        activeMemberships: memberships.length,
+        scheduledSessions: schedule.length,
+        monthEarnings: earnings.totalEarnings || 0
+      });
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     } finally {
@@ -44,27 +70,27 @@ const Dashboard = () => {
 
   const statCards = [
     {
-      name: 'Всего посещений',
-      value: stats?.totalVisits || 0,
-      icon: Activity,
+      name: 'Всего клиентов',
+      value: stats.totalClients,
+      icon: Users,
       color: 'bg-blue-500',
     },
     {
-      name: 'Уникальных посетителей',
-      value: stats?.uniqueVisitors || 0,
-      icon: Users,
+      name: 'Активных абонементов',
+      value: stats.activeMemberships,
+      icon: CreditCard,
       color: 'bg-green-500',
     },
     {
-      name: 'Активных абонементов',
-      value: stats?.activeMembers || 0,
-      icon: UserCheck,
+      name: 'Запланировано тренировок',
+      value: stats.scheduledSessions,
+      icon: Calendar,
       color: 'bg-purple-500',
     },
     {
-      name: 'Процент посещаемости',
-      value: `${stats?.attendanceRate || 0}%`,
-      icon: TrendingUp,
+      name: 'Заработок за месяц',
+      value: `${stats.monthEarnings.toLocaleString('ru-RU')} ₽`,
+      icon: DollarSign,
       color: 'bg-orange-500',
     },
   ];
@@ -92,28 +118,6 @@ const Dashboard = () => {
           <div className="flex-1 text-center md:text-left">
             <h1 className="text-3xl md:text-4xl font-bold mb-2">Абдрахманов Булат</h1>
             <p className="text-lg text-white/90 mb-4">Персональный тренер</p>
-            <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-              <button
-                onClick={() => setPeriod('week')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  period === 'week'
-                    ? 'bg-white text-blue-600'
-                    : 'bg-white/20 text-white hover:bg-white/30'
-                }`}
-              >
-                Неделя
-              </button>
-              <button
-                onClick={() => setPeriod('month')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  period === 'month'
-                    ? 'bg-white text-blue-600'
-                    : 'bg-white/20 text-white hover:bg-white/30'
-                }`}
-              >
-                Месяц
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -138,20 +142,6 @@ const Dashboard = () => {
         })}
       </div>
 
-      {/* Chart */}
-      <div className="bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-6">График посещений</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <Line type="monotone" dataKey="count" stroke="#3b82f6" strokeWidth={2} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
       {/* Quick Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl shadow-md p-6">
@@ -159,17 +149,15 @@ const Dashboard = () => {
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-gray-600">Всего клиентов:</span>
-              <span className="font-semibold">{stats?.totalClients || 0}</span>
+              <span className="font-semibold">{stats.totalClients}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Всего тренеров:</span>
-              <span className="font-semibold">{stats?.totalTrainers || 0}</span>
+              <span className="text-gray-600">Активных абонементов:</span>
+              <span className="font-semibold">{stats.activeMemberships}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Период:</span>
-              <span className="font-semibold">
-                {period === 'week' ? 'Последние 7 дней' : 'Последние 30 дней'}
-              </span>
+              <span className="text-gray-600">Тренировок в этом месяце:</span>
+              <span className="font-semibold">{stats.scheduledSessions}</span>
             </div>
           </div>
         </div>
