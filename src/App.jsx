@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import ClientsNew from './pages/ClientsNew';
 import Memberships from './pages/Memberships';
 import Schedule from './pages/Schedule';
+import AnalyticsNew from './pages/AnalyticsNew';
 import Scanner from './pages/Scanner';
 import Settings from './pages/Settings';
 import Layout from './components/Layout';
@@ -66,6 +67,7 @@ function App() {
                   <Route path="/clients" element={<ClientsNew />} />
                   <Route path="/memberships" element={<Memberships />} />
                   <Route path="/schedule" element={<Schedule />} />
+                  <Route path="/analytics" element={<AnalyticsNew />} />
                   <Route path="/settings" element={<Settings />} />
                 </Routes>
               </Layout>

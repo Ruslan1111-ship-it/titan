@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, CreditCard, Calendar, QrCode, LogOut, Menu, X, Settings } from 'lucide-react';
+import { Home, Users, CreditCard, Calendar, BarChart3, QrCode, LogOut, Menu, X, Settings } from 'lucide-react';
 
 const Layout = ({ children, onLogout }) => {
   const location = useLocation();
@@ -11,6 +11,7 @@ const Layout = ({ children, onLogout }) => {
     { name: 'Клиенты', href: '/clients', icon: Users },
     { name: 'Абонементы', href: '/memberships', icon: CreditCard },
     { name: 'Расписание', href: '/schedule', icon: Calendar },
+    { name: 'Аналитика', href: '/analytics', icon: BarChart3 },
     { name: 'Настройки', href: '/settings', icon: Settings },
   ];
 
