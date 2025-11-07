@@ -184,18 +184,16 @@ const Dashboard = () => {
               Управление клиентами
             </a>
             <a
-              href="/scanner"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/schedule"
               className="block px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
             >
-              Открыть сканер QR
+              Расписание тренировок
             </a>
             <a
               href="/analytics"
               className="block px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
             >
-              Подробная аналитика
+              Аналитика и заработок
             </a>
           </div>
         </div>

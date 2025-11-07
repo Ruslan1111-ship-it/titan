@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, CreditCard, Calendar, BarChart3, QrCode, LogOut, Menu, X, Settings } from 'lucide-react';
+import { Home, Users, CreditCard, Calendar, BarChart3, LogOut, Menu, X, Settings } from 'lucide-react';
 
 const Layout = ({ children, onLogout }) => {
   const location = useLocation();
@@ -65,17 +65,8 @@ const Layout = ({ children, onLogout }) => {
             })}
           </nav>
 
-          {/* Scanner & Logout */}
+          {/* Logout */}
           <div className="p-4 border-t">
-            <a
-              href="/scanner"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center px-4 py-3 mb-2 text-sm font-medium text-green-600 transition-colors rounded-lg hover:bg-green-50"
-            >
-              <QrCode className="w-5 h-5 mr-3" />
-              Сканер QR
-            </a>
             <button
               onClick={onLogout}
               className="flex items-center w-full px-4 py-3 text-sm font-medium text-red-600 transition-colors rounded-lg hover:bg-red-50"
