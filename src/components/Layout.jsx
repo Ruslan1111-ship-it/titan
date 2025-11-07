@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Users, UserCheck, Activity, BarChart3, QrCode, LogOut } from 'lucide-react';
+import { Home, Users, UserCheck, Activity, BarChart3, QrCode, LogOut, Menu, X } from 'lucide-react';
 
 const Layout = ({ children, onLogout }) => {
   const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigation = [
     { name: 'Главная', href: '/', icon: Home },
@@ -15,13 +16,29 @@ const Layout = ({ children, onLogout }) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Mobile header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-blue-600 shadow-lg z-50 flex items-center justify-between px-4">
+        <h1 className="text-xl font-bold text-white">ТИТАН</h1>
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="text-white p-2"
+        >
+          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
+
       {/* Sidebar */}
-      <div className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg">
+      <div className={`fixed inset-y-0 left-0 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-40 ${
+        mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      } lg:translate-x-0`}>
         <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="flex items-center justify-center h-16 px-4 bg-blue-600">
+          {/* Logo - hidden on mobile (shown in header) */}
+          <div className="hidden lg:flex items-center justify-center h-16 px-4 bg-blue-600">
             <h1 className="text-xl font-bold text-white">ТИТАН</h1>
           </div>
+
+          {/* Spacer for mobile header */}
+          <div className="h-16 lg:hidden"></div>
 
           {/* Navigation */}
           <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
@@ -32,6 +49,7 @@ const Layout = ({ children, onLogout }) => {
                 <Link
                   key={item.name}
                   to={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
                     isActive
                       ? 'bg-blue-50 text-blue-600'
@@ -67,9 +85,17 @@ const Layout = ({ children, onLogout }) => {
         </div>
       </div>
 
+      {/* Overlay for mobile */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        ></div>
+      )}
+
       {/* Main content */}
-      <div className="pl-64">
-        <main className="p-8">{children}</main>
+      <div className="pt-16 lg:pt-0 lg:pl-64">
+        <main className="p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );

@@ -136,35 +136,44 @@ const Scanner = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
-      <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-4 sm:mb-6 w-full max-w-2xl mx-auto">
-        <div className="text-center mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-8 text-center">Сканер QR-кодов</h1>
-          <p className="text-gray-600 mt-2">Отсканируйте QR-код клиента для регистрации посещения</p>
-        </div>
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 sm:mb-6 text-center">Сканер QR-кодов</h1>
+        
+        {/* Scanner Section */}
+        <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+          <div className="flex justify-center mb-4 sm:mb-6">
+            {!scanning ? (
+              <button
+                onClick={startScanning}
+                className="bg-blue-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2 text-base sm:text-lg w-full sm:w-auto justify-center"
+              >
+                <Camera className="w-5 h-5 sm:w-6 sm:h-6" />
+                Начать сканирование
+              </button>
+            ) : (
+              <button
+                onClick={stopScanning}
+                className="bg-red-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-medium hover:bg-red-700 transition-colors text-base sm:text-lg w-full sm:w-auto"
+              >
+                Остановить
+              </button>
+            )}
+          </div>
 
-        {/* Camera View */}
-        {!result && (
-          <div className="relative bg-black rounded-lg overflow-hidden w-full" style={{ paddingBottom: '75%', maxHeight: '70vh' }}>
-            {scanning ? (
+          {scanning && (
+            <div className="relative bg-black rounded-lg overflow-hidden mb-4" style={{ paddingBottom: '75%' }}>
               <video
                 ref={videoRef}
                 autoPlay
                 playsInline
-                className="w-full h-full object-cover"
+                muted
+                className="absolute inset-0 w-full h-full object-cover"
               />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Camera className="w-24 h-24 text-gray-400" />
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-48 h-48 sm:w-64 sm:h-64 border-4 border-white rounded-lg"></div>
               </div>
-            )}
-            
-            {scanning && (
-              <div className="absolute inset-0 border-4 border-blue-500 rounded-lg pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 border-4 border-white rounded-lg"></div>
-              </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
 
         {/* Result Display */}
         {result && (
@@ -210,39 +219,38 @@ const Scanner = () => {
           </div>
         )}
 
-        {/* Error Display */}
-        {error && (
-          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start">
-            <AlertCircle className="w-5 h-5 text-yellow-600 mr-2 flex-shrink-0 mt-0.5" />
-            <p className="text-yellow-800">{error}</p>
-          </div>
-        )}
+          {/* Error Display */}
+          {error && (
+            <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start">
+              <AlertCircle className="w-5 h-5 text-yellow-600 mr-2 flex-shrink-0 mt-0.5" />
+              <p className="text-yellow-800 text-sm sm:text-base">{error}</p>
+            </div>
+          )}
+        </div>
 
         {/* Manual Input */}
-        {!result && (
-          <div>
-            <div className="text-center text-gray-600 mb-3">или введите UUID вручную</div>
-            <form onSubmit={handleManualSubmit} className="flex gap-3">
-              <input
-                type="text"
-                value={manualInput}
-                onChange={(e) => setManualInput(e.target.value)}
-                placeholder="Введите UUID клиента"
-                className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base w-full"
-              />
-              <button
-                type="submit"
-                className="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
-              >
-                Проверить
-              </button>
-            </form>
-          </div>
-        )}
+        <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 text-center">Ручной ввод UUID</h2>
+          <form onSubmit={handleManualSubmit} className="flex flex-col sm:flex-row gap-3">
+            <input
+              type="text"
+              value={manualInput}
+              onChange={(e) => setManualInput(e.target.value)}
+              placeholder="Введите UUID клиента"
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+            />
+            <button
+              type="submit"
+              className="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors whitespace-nowrap"
+            >
+              Проверить
+            </button>
+          </form>
+        </div>
 
         {/* Info */}
-        <div className="mt-6 text-center text-sm text-gray-500">
-          <p>Для работы сканера требуется доступ к камере</p>
+        <div className="text-center text-xs sm:text-sm text-gray-500 px-4">
+          <p>💡 Для работы сканера требуется доступ к камере</p>
           <p className="mt-1">Результат отобразится автоматически после сканирования</p>
         </div>
       </div>
