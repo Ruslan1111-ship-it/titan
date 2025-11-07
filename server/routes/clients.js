@@ -10,13 +10,8 @@ const router = express.Router();
 router.get('/', authenticateToken, (req, res) => {
   try {
     const clients = db.prepare(`
-      SELECT 
-        c.*,
-        t.full_name as trainer_name,
-        t.specialization as trainer_specialization
-      FROM clients c
-      LEFT JOIN trainers t ON c.trainer_id = t.id
-      ORDER BY c.full_name
+      SELECT * FROM clients
+      ORDER BY full_name
     `).all();
 
     res.json(clients);
@@ -29,16 +24,7 @@ router.get('/', authenticateToken, (req, res) => {
 // Получить клиента по ID
 router.get('/:id', authenticateToken, (req, res) => {
   try {
-    const client = db.prepare(`
-      SELECT 
-        c.*,
-        t.full_name as trainer_name,
-        t.phone as trainer_phone,
-        t.specialization as trainer_specialization
-      FROM clients c
-      LEFT JOIN trainers t ON c.trainer_id = t.id
-      WHERE c.id = ?
-    `).get(req.params.id);
+    const client = db.prepare('SELECT * FROM clients WHERE id = ?').get(req.params.id);
 
     if (!client) {
       return res.status(404).json({ error: 'Клиент не найден' });
@@ -54,16 +40,7 @@ router.get('/:id', authenticateToken, (req, res) => {
 // Получить клиента по UUID (для сканирования QR)
 router.get('/uuid/:uuid', (req, res) => {
   try {
-    const client = db.prepare(`
-      SELECT 
-        c.*,
-        t.full_name as trainer_name,
-        t.phone as trainer_phone,
-        t.specialization as trainer_specialization
-      FROM clients c
-      LEFT JOIN trainers t ON c.trainer_id = t.id
-      WHERE c.uuid = ?
-    `).get(req.params.uuid);
+    const client = db.prepare('SELECT * FROM clients WHERE uuid = ?').get(req.params.uuid);
 
     if (!client) {
       return res.status(404).json({ error: 'Клиент не найден' });
