@@ -15,11 +15,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 10000;
+
+console.log('🔧 Инициализация сервера...');
+console.log('📍 NODE_ENV:', process.env.NODE_ENV);
+console.log('🔌 PORT:', PORT);
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Health check (должен быть первым)
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Сервер работает', env: process.env.NODE_ENV });
+});
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -28,14 +37,10 @@ app.use('/api/clients', clientsRoutes);
 app.use('/api/visits', visitsRoutes);
 app.use('/api/analytics', analyticsRoutes);
 
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Сервер работает' });
-});
-
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   const distPath = path.join(__dirname, '..', 'dist');
+  console.log('📁 Serving static files from:', distPath);
   app.use(express.static(distPath));
   
   app.get('*', (req, res) => {
@@ -49,7 +54,9 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Внутренняя ошибка сервера' });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Сервер запущен на порту ${PORT}`);
+  console.log(`📊 Режим: ${process.env.NODE_ENV || 'development'}`);
   console.log(`📊 API доступен по адресу: http://localhost:${PORT}/api`);
+  console.log(`✅ Сервер готов к работе!`);
 });
