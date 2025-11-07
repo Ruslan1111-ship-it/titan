@@ -83,7 +83,7 @@ const Login = ({ onLogin }) => {
         <div className="mt-6 text-center text-sm text-gray-600">
           <p>По умолчанию:</p>
           <p className="font-mono bg-gray-100 px-2 py-1 rounded mt-1">
-            admin / admin123
+            titan_admin / Titan2025!
           </p>
         </div>
       </div>

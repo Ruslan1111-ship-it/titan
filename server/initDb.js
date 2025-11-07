@@ -56,16 +56,16 @@ db.exec(`
 `);
 
 // Создание администратора по умолчанию
-const defaultPassword = bcrypt.hashSync('admin123', 10);
-const checkAdmin = db.prepare('SELECT id FROM admins WHERE username = ?').get('admin');
+const defaultPassword = bcrypt.hashSync('Titan2025!', 10);
+const checkAdmin = db.prepare('SELECT id FROM admins WHERE username = ?').get('titan_admin');
 
 if (!checkAdmin) {
   db.prepare('INSERT INTO admins (username, password, full_name) VALUES (?, ?, ?)').run(
-    'admin',
+    'titan_admin',
     defaultPassword,
-    'Администратор'
+    'Администратор ТИТАН'
   );
-  console.log('✓ Создан администратор по умолчанию (логин: admin, пароль: admin123)');
+  console.log('✓ Создан администратор по умолчанию (логин: titan_admin, пароль: Titan2025!)');
 }
 
 console.log('✓ База данных успешно инициализирована!');
