@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
-import Clients from './pages/Clients';
-import Trainers from './pages/Trainers';
-import Visits from './pages/Visits';
-import Analytics from './pages/Analytics';
+import ClientsNew from './pages/ClientsNew';
+import Memberships from './pages/Memberships';
+import Schedule from './pages/Schedule';
 import Scanner from './pages/Scanner';
 import Settings from './pages/Settings';
 import Layout from './components/Layout';
@@ -64,10 +63,9 @@ function App() {
               <Layout onLogout={handleLogout}>
                 <Routes>
                   <Route path="/" element={<Dashboard />} />
-                  <Route path="/clients" element={<Clients />} />
-                  <Route path="/trainers" element={<Trainers />} />
-                  <Route path="/visits" element={<Visits />} />
-                  <Route path="/analytics" element={<Analytics />} />
+                  <Route path="/clients" element={<ClientsNew />} />
+                  <Route path="/memberships" element={<Memberships />} />
+                  <Route path="/schedule" element={<Schedule />} />
                   <Route path="/settings" element={<Settings />} />
                 </Routes>
               </Layout>
