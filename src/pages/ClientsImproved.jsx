@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, CreditCard, AlertCircle, CheckCircle, DollarSign, Calendar } from 'lucide-react';
+import { Plus, CreditCard, AlertCircle, CheckCircle, DollarSign, Calendar, Edit2, Trash2 } from 'lucide-react';
 
 const ClientsImproved = () => {
   const [clients, setClients] = useState([]);
@@ -8,6 +8,7 @@ const ClientsImproved = () => {
   const [showClientForm, setShowClientForm] = useState(false);
   const [showMembershipForm, setShowMembershipForm] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
+  const [editingClient, setEditingClient] = useState(null);
   const [clientFormData, setClientFormData] = useState({
     full_name: '',
     phone: '',
@@ -94,8 +95,13 @@ const ClientsImproved = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/clients', {
-        method: 'POST',
+      const url = editingClient 
+        ? `/api/clients/${editingClient.id}`
+        : '/api/clients';
+      const method = editingClient ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -106,10 +112,46 @@ const ClientsImproved = () => {
       if (response.ok) {
         fetchData();
         setShowClientForm(false);
+        setEditingClient(null);
         setClientFormData({ full_name: '', phone: '', notes: '' });
       }
     } catch (error) {
       console.error('Error:', error);
+    }
+  };
+
+  const handleEditClient = (client) => {
+    setEditingClient(client);
+    setClientFormData({
+      full_name: client.full_name,
+      phone: client.phone,
+      notes: client.notes || ''
+    });
+    setShowClientForm(true);
+  };
+
+  const handleDeleteClient = async (clientId) => {
+    if (!confirm('Вы уверены, что хотите удалить этого клиента? Все его абонементы и тренировки также будут удалены.')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/clients/${clientId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        fetchData();
+      } else {
+        alert('Ошибка при удалении клиента');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Ошибка при удалении клиента');
     }
   };
 
@@ -166,7 +208,9 @@ const ClientsImproved = () => {
       {/* Client Form */}
       {showClientForm && (
         <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-          <h2 className="text-xl font-bold mb-4">Новый клиент</h2>
+          <h2 className="text-xl font-bold mb-4">
+            {editingClient ? 'Редактировать клиента' : 'Новый клиент'}
+          </h2>
           <form onSubmit={handleClientSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -205,7 +249,11 @@ const ClientsImproved = () => {
               </button>
               <button
                 type="button"
-                onClick={() => setShowClientForm(false)}
+                onClick={() => {
+                  setShowClientForm(false);
+                  setEditingClient(null);
+                  setClientFormData({ full_name: '', phone: '', notes: '' });
+                }}
                 className="px-6 py-2 bg-gray-300 rounded-lg"
               >
                 Отмена
@@ -283,23 +331,41 @@ const ClientsImproved = () => {
         {clientsWithMemberships.map(client => (
           <div key={client.id} className="bg-white rounded-xl shadow-md p-6">
             <div className="flex justify-between items-start mb-4">
-              <div>
+              <div className="flex-1">
                 <h3 className="text-xl font-bold text-gray-900">{client.full_name}</h3>
                 <p className="text-gray-600">{client.phone}</p>
                 {client.notes && (
                   <p className="text-sm text-gray-500 mt-1">{client.notes}</p>
                 )}
               </div>
-              <button
-                onClick={() => {
-                  setSelectedClient(client);
-                  setShowMembershipForm(true);
-                }}
-                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-              >
-                <CreditCard className="w-4 h-4" />
-                Купить абонемент
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleEditClient(client)}
+                  className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  title="Редактировать"
+                >
+                  <Edit2 className="w-4 h-4" />
+                  Редактировать
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectedClient(client);
+                    setShowMembershipForm(true);
+                  }}
+                  className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                  title="Купить абонемент"
+                >
+                  <CreditCard className="w-4 h-4" />
+                  Купить абонемент
+                </button>
+                <button
+                  onClick={() => handleDeleteClient(client.id)}
+                  className="flex items-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                  title="Удалить клиента"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
             {/* Active Memberships */}
