@@ -18,7 +18,7 @@ const Layout = ({ children, onLogout }) => {
     <div className="min-h-screen bg-gray-50">
       {/* Mobile header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-blue-600 shadow-lg z-50 flex items-center justify-between px-4">
-        <h1 className="text-lg font-bold text-white">Персональный Тренер</h1>
+        <h1 className="text-sm font-bold text-white">Тренер Абдрахманов Булат</h1>
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="text-white p-2"
@@ -33,9 +33,9 @@ const Layout = ({ children, onLogout }) => {
       } lg:translate-x-0`}>
         <div className="flex flex-col h-full">
           {/* Logo - hidden on mobile (shown in header) */}
-          <div className="hidden lg:flex flex-col items-center justify-center h-20 px-4 bg-gradient-to-r from-blue-600 to-purple-600">
-            <h1 className="text-xl font-bold text-white">Персональный</h1>
-            <h1 className="text-xl font-bold text-white">Тренер</h1>
+          <div className="hidden lg:flex flex-col items-center justify-center h-24 px-4 bg-gradient-to-r from-blue-600 to-purple-600">
+            <h1 className="text-lg font-bold text-white text-center">Персональный Тренер</h1>
+            <h1 className="text-base font-semibold text-white/90 text-center">Абдрахманов Булат</h1>
           </div>
 
           {/* Spacer for mobile header */}

@@ -78,17 +78,20 @@ const Dashboard = () => {
           <div className="flex-shrink-0">
             <div className="w-32 h-32 rounded-full bg-white/20 flex items-center justify-center overflow-hidden border-4 border-white/30">
               <img 
-                src="https://ui-avatars.com/api/?name=Trainer&size=128&background=3b82f6&color=fff&bold=true" 
-                alt="Тренер"
+                src="/images/trainer.jpg" 
+                alt="Абдрахманов Булат"
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.src = "https://ui-avatars.com/api/?name=Bulat+Abdrakhmanov&size=128&background=3b82f6&color=fff&bold=true";
+                }}
               />
             </div>
           </div>
           
           {/* Trainer Info */}
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">Добро пожаловать!</h1>
-            <p className="text-lg text-white/90 mb-4">Персональный тренер - Система управления клиентами</p>
+            <h1 className="text-3xl md:text-4xl font-bold mb-2">Абдрахманов Булат</h1>
+            <p className="text-lg text-white/90 mb-4">Персональный тренер</p>
             <div className="flex flex-wrap gap-2 justify-center md:justify-start">
               <button
                 onClick={() => setPeriod('week')}
