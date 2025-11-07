@@ -71,33 +71,47 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Главная панель</h1>
-          <p className="text-gray-600 mt-1">Обзор статистики тренажёрного зала</p>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => setPeriod('week')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              period === 'week'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Неделя
-          </button>
-          <button
-            onClick={() => setPeriod('month')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              period === 'month'
-                ? 'bg-blue-600 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-100'
-            }`}
-          >
-            Месяц
-          </button>
+      {/* Header with Trainer Photo */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl shadow-lg p-8 text-white">
+        <div className="flex flex-col md:flex-row items-center gap-6">
+          {/* Trainer Photo */}
+          <div className="flex-shrink-0">
+            <div className="w-32 h-32 rounded-full bg-white/20 flex items-center justify-center overflow-hidden border-4 border-white/30">
+              <img 
+                src="https://ui-avatars.com/api/?name=Trainer&size=128&background=3b82f6&color=fff&bold=true" 
+                alt="Тренер"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+          
+          {/* Trainer Info */}
+          <div className="flex-1 text-center md:text-left">
+            <h1 className="text-3xl md:text-4xl font-bold mb-2">Добро пожаловать!</h1>
+            <p className="text-lg text-white/90 mb-4">Персональный тренер - Система управления клиентами</p>
+            <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+              <button
+                onClick={() => setPeriod('week')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  period === 'week'
+                    ? 'bg-white text-blue-600'
+                    : 'bg-white/20 text-white hover:bg-white/30'
+                }`}
+              >
+                Неделя
+              </button>
+              <button
+                onClick={() => setPeriod('month')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  period === 'month'
+                    ? 'bg-white text-blue-600'
+                    : 'bg-white/20 text-white hover:bg-white/30'
+                }`}
+              >
+                Месяц
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
