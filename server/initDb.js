@@ -38,12 +38,15 @@ db.exec(`
     FOREIGN KEY (trainer_id) REFERENCES trainers(id) ON DELETE SET NULL
   );
 
-  -- Таблица посещений
+  -- Таблица посещений (вход/выход)
   CREATE TABLE IF NOT EXISTS visits (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     client_id INTEGER NOT NULL,
-    visit_date DATE NOT NULL,
-    visit_time TIME NOT NULL,
+    check_in_date DATE NOT NULL,
+    check_in_time TIME NOT NULL,
+    check_out_date DATE,
+    check_out_time TIME,
+    duration_minutes INTEGER,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
   );
@@ -51,7 +54,8 @@ db.exec(`
   -- Индексы для оптимизации запросов
   CREATE INDEX IF NOT EXISTS idx_clients_uuid ON clients(uuid);
   CREATE INDEX IF NOT EXISTS idx_visits_client_id ON visits(client_id);
-  CREATE INDEX IF NOT EXISTS idx_visits_date ON visits(visit_date);
+  CREATE INDEX IF NOT EXISTS idx_visits_check_in_date ON visits(check_in_date);
+  CREATE INDEX IF NOT EXISTS idx_visits_check_out_date ON visits(check_out_date);
   CREATE INDEX IF NOT EXISTS idx_clients_trainer ON clients(trainer_id);
 `);
 

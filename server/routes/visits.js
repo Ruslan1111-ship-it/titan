@@ -29,16 +29,16 @@ router.get('/', authenticateToken, (req, res) => {
     }
 
     if (start_date) {
-      query += ' AND v.visit_date >= ?';
+      query += ' AND v.check_in_date >= ?';
       params.push(start_date);
     }
 
     if (end_date) {
-      query += ' AND v.visit_date <= ?';
+      query += ' AND v.check_in_date <= ?';
       params.push(end_date);
     }
 
-    query += ' ORDER BY v.visit_date DESC, v.visit_time DESC LIMIT ?';
+    query += ' ORDER BY v.check_in_date DESC, v.check_in_time DESC LIMIT ?';
     params.push(parseInt(limit));
 
     const visits = db.prepare(query).all(...params);
@@ -50,7 +50,7 @@ router.get('/', authenticateToken, (req, res) => {
   }
 });
 
-// Зарегистрировать посещение (сканирование QR-кода)
+// Зарегистрировать вход/выход (сканирование QR-кода)
 router.post('/checkin', async (req, res) => {
   try {
     const { uuid } = req.body;
@@ -109,47 +109,95 @@ router.post('/checkin', async (req, res) => {
       }
     }
 
-    // Зарегистрировать посещение
     const now = new Date();
-    const visitDate = now.toISOString().split('T')[0];
-    const visitTime = now.toTimeString().split(' ')[0];
+    const currentDate = now.toISOString().split('T')[0];
+    const currentTime = now.toTimeString().split(' ')[0];
 
-    const result = db.prepare(`
-      INSERT INTO visits (client_id, visit_date, visit_time)
-      VALUES (?, ?, ?)
-    `).run(client.id, visitDate, visitTime);
+    // Проверить, есть ли активное посещение (вход без выхода)
+    const activeVisit = db.prepare(`
+      SELECT * FROM visits 
+      WHERE client_id = ? AND check_out_date IS NULL
+      ORDER BY check_in_date DESC, check_in_time DESC
+      LIMIT 1
+    `).get(client.id);
 
-    const visit = db.prepare(`
-      SELECT 
-        v.*,
-        c.full_name as client_name,
-        c.phone as client_phone,
-        t.full_name as trainer_name,
-        t.phone as trainer_phone,
-        t.specialization as trainer_specialization
-      FROM visits v
-      JOIN clients c ON v.client_id = c.id
-      LEFT JOIN trainers t ON c.trainer_id = t.id
-      WHERE v.id = ?
-    `).get(result.lastInsertRowid);
+    let visit, action;
 
-    res.status(201).json({
-      message: 'Посещение успешно зарегистрировано',
-      visit,
-      client: {
-        id: client.id,
-        full_name: client.full_name,
-        phone: client.phone,
-        membership_active: client.membership_active,
-        membership_end_date: client.membership_end_date,
-        trainer_name: client.trainer_name,
-        trainer_phone: client.trainer_phone,
-        trainer_specialization: client.trainer_specialization,
-      }
-    });
+    if (activeVisit) {
+      // Это выход - обновляем запись
+      const checkInDateTime = new Date(`${activeVisit.check_in_date}T${activeVisit.check_in_time}`);
+      const checkOutDateTime = new Date(`${currentDate}T${currentTime}`);
+      const durationMinutes = Math.round((checkOutDateTime - checkInDateTime) / 60000);
+
+      db.prepare(`
+        UPDATE visits 
+        SET check_out_date = ?, check_out_time = ?, duration_minutes = ?
+        WHERE id = ?
+      `).run(currentDate, currentTime, durationMinutes, activeVisit.id);
+
+      visit = db.prepare(`
+        SELECT 
+          v.*,
+          c.full_name as client_name,
+          c.phone as client_phone,
+          t.full_name as trainer_name
+        FROM visits v
+        JOIN clients c ON v.client_id = c.id
+        LEFT JOIN trainers t ON c.trainer_id = t.id
+        WHERE v.id = ?
+      `).get(activeVisit.id);
+
+      action = 'checkout';
+      
+      res.status(200).json({
+        message: `До свидания, ${client.full_name}! Вы были в клубе ${durationMinutes} минут`,
+        action,
+        visit,
+        client: {
+          id: client.id,
+          full_name: client.full_name,
+          phone: client.phone,
+          trainer_name: client.trainer_name,
+        }
+      });
+    } else {
+      // Это вход - создаём новую запись
+      const result = db.prepare(`
+        INSERT INTO visits (client_id, check_in_date, check_in_time)
+        VALUES (?, ?, ?)
+      `).run(client.id, currentDate, currentTime);
+
+      visit = db.prepare(`
+        SELECT 
+          v.*,
+          c.full_name as client_name,
+          c.phone as client_phone,
+          t.full_name as trainer_name
+        FROM visits v
+        JOIN clients c ON v.client_id = c.id
+        LEFT JOIN trainers t ON c.trainer_id = t.id
+        WHERE v.id = ?
+      `).get(result.lastInsertRowid);
+
+      action = 'checkin';
+
+      res.status(201).json({
+        message: `Добро пожаловать, ${client.full_name}!`,
+        action,
+        visit,
+        client: {
+          id: client.id,
+          full_name: client.full_name,
+          phone: client.phone,
+          membership_active: client.membership_active,
+          membership_end_date: client.membership_end_date,
+          trainer_name: client.trainer_name,
+        }
+      });
+    }
   } catch (error) {
-    console.error('Check-in error:', error);
-    res.status(500).json({ error: 'Ошибка регистрации посещения' });
+    console.error('Check-in/out error:', error);
+    res.status(500).json({ error: 'Ошибка регистрации входа/выхода' });
   }
 });
 
@@ -165,7 +213,7 @@ router.get('/client/:clientId', authenticateToken, (req, res) => {
       JOIN clients c ON v.client_id = c.id
       LEFT JOIN trainers t ON c.trainer_id = t.id
       WHERE v.client_id = ?
-      ORDER BY v.visit_date DESC, v.visit_time DESC
+      ORDER BY v.check_in_date DESC, v.check_in_time DESC
     `).all(req.params.clientId);
 
     res.json(visits);
